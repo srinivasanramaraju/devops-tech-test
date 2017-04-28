@@ -26,5 +26,5 @@
 ## Bonus Points
   * If you use ansible vault for encrypting sensitive information.
   * If you can document all aspects of your code, in the README and within the code itself.
-  * If you can generate the self signed cert/key.
-  * If you can make this run all in one playbook.
+  * If you can generate the self signed cert/key as part of the automation.
+  * If you can make this run all in one playbook or script.
