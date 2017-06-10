@@ -1,0 +1,64 @@
+- name: Installing neccessary packages needed to run the nodejs app.
+  hosts: webservers
+  user: centos
+  sudo: yes
+
+  tasks:
+   - name: Update all packages to latest
+     yum: name=* state=latest
+     become: true
+     become_user: root
+
+   - name: install epel release
+     yum: name=epel-release state=latest
+     become: true
+     become_user: root
+
+   - name: install node js
+     yum: name=nodejs state=latest
+     become: true
+     become_user: root
+
+   - name: install npm
+     yum: name=npm state=latest
+     become: true
+     become_user: root
+
+   - name: NGINX | Installing NGINX repo rpm
+     yum: name=http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm state=installed
+     become: true
+     become_user: root
+
+   - name: NGINX | Installing NGINX
+     yum: name=nginx state=installed update_cache=true
+     become: true
+     become_user: root
+
+   - name: start nginx
+     become: true
+     command: systemctl start nginx
+
+   - name: copy the conf to ngnix conf
+     become: true
+     template: src=nginx.conf dest=/etc/nginx/nginx.conf
+
+   - name: copy the sample node js code
+     copy:
+        src: hello.js
+        dest: /usr
+
+   - name: copy the sample html code
+     copy:
+       src: index.html
+       dest: /usr/share/nginx/html
+
+   - name: "Install forever (to run Node.js app)."
+     npm: name=forever global=yes state=present
+
+   - name: "Check list of Node.js apps running."
+     command: forever list
+     register: forever_list
+     changed_when: false
+
+   - name: start node hello world
+     command: forever start /usr/hello.js
